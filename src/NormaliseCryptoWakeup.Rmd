@@ -1,0 +1,88 @@
+---
+title: "Tidy and normalise abundance data"
+author: "Edward Wallace"
+date: "11/05/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+```
+
+This document is a brief description of the data and normalisation for the Cryptococcus wakeup RNA-seq data.
+
+## Load source data
+
+We used [kallisto](https://pachterlab.github.io/kallisto/) software to quantify reads for each sample by pseudoaligning them to transcript isoforms, for open reading frames and miscRNAs, in the [CNA3 annotation of the Cryptococcus neoformans H99 genome](http://fungi.ensembl.org/Cryptococcus_neoformans_var_grubii_h99_gca_000149245/Info/Index).
+
+These quantifications, in estimated counts and normalised to transcripts per million (TPM), were assembled into a single tidy data frame, *CW-kallisto1-abundance-long-bysample-byisoform.txt*. Note that TPM is a per-sample density normalisation so that the sum of TPM for each sample is 1million.
+
+Here we load this file.
+
+```{r load_kallcounts}
+kallcountfile <- here::here("data","CW-kallisto1-abundance-long-bysample-byisoform.txt")
+
+kallcounts <- readr::read_tsv(kallcountfile, col_types="ccnn", comment= "#")
+
+kallcounts
+```
+
+## Collect data by gene
+
+To analyse each gene as a single entity, here we collapse different transcript isoforms into a single unit by adding up the estimated counts and tpms.
+
+```{r collect_bygene}
+kallcounts_bygene <- 
+  kallcounts %>%
+  dplyr::mutate(Gene = stringr::str_remove(target_id,"T[0-9]")) %>%
+  dplyr::group_by(Code,Gene) %>%
+  dplyr::summarise(EstCounts=sum(est_counts),TPM = sum(tpm))
+
+kallcounts_bygene
+```
+
+## Estimate fold-change within gene
+
+To compare the *relative* levels of each gene in different samples, we calculate a median TPM for each gene in the samples, and then output a fold change for each sample as the TPM divided by median TPM.
+
+```{r fold_change}
+kallcounts_bygene_fc <- 
+  kallcounts_bygene %>%
+  dplyr::group_by(Gene) %>%
+  dplyr::mutate(TPM.median = median(TPM),
+                FoldChange = TPM/TPM.median)
+
+kallcounts_bygene_fc
+```
+
+### Write to file
+
+We write this to a file. We also round to 3 significant figures, because more than that is excessive.
+
+```{r write_kallcounts_bygene_fc}
+kallcounts_bygene_fcfile <-
+    here::here("data","CW-kallisto-abundance-foldchange-long-bygene.txt")
+
+write_lines(c("# CW-kallisto-abundance-foldchange-long-bygene.txt",
+              "# Crypto Wakeup kallisto abundance and foldchange in long tidy format summarised by gnee (summed over transcript isoforms)",
+              "# Edward Wallace, Edward.Wallace@ed.ac.uk, May 2020",
+              "# Contents:",
+              "#   Code: Short sample description, see CryptoWakeUpSampleSheetPlusTags.txt",
+              "#   Gene: C. neoformans H99 systematic ORF name",
+              "#   EstCounts: estimated gene counts from kallisto",              
+              "#   TPM: estimated transcripts per million from kallisto",  
+              "#   FoldChange: TPM relative to median for one gene across all samples"),
+            path=kallcounts_bygene_fcfile)
+
+
+kallcounts_bygene_fc %>%
+    select(-TPM.median) %>%
+    mutate_if(is.numeric, round, digits=3) %>%
+    write_tsv(kallcounts_bygene_fcfile,append=TRUE)
+```
+
+
+
+

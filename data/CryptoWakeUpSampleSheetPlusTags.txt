@@ -1,0 +1,55 @@
+# CryptoWakeUpSampleSheetPlusTags.txt
+# Sample sheet and experimental design for the Cryptococcus wakeup experiment
+# Edward Wallace, Edward.Wallace@ed.ac.uk, 2017
+# Contents:
+#   SampleID: Sample identifier
+#   Code: short code summarising sample information. 
+#         Y/R - growth medium (YPD/RPMI+) 
+#         M/C/H - growth temperature category (Middle 30C, Cold 25C, Hot 37C)
+#         9/0/1/2/3/4 - timepoint category (9 = 180min, 0 = 0min, 1 = 10min, 2 = 30min, 3 = 60min, 4 = 120min)
+#         A/B - biological replicate 
+#   Medium: growth medium of sample, YPD (rich medium), RPMI+ (RPMI cell culture medium + 10% fetal bovine serum)      
+#   Temp: growth temperature 30C, 25C, 37C
+#   Time: growth time from waking up in minutes
+#   Rep: biological replicate A or B
+#   TagID: name of the nucleotide tag used to distinguish samples
+#   TagRead: sequences of the nucleotide tag used to distinguish samples
+# Note that SampleID, TagID, and TagRead are *not* relevant to the downstream analysis
+#   
+SampleID	Code	Medium	Temp	Time	Rep	TagID	TagRead
+CW01	YM9A	YPD	30C	180	A	Tag09	CAACACTTT
+CW02	YC0A	YPD	25C	0	A	Tag12	CATCTGTAT
+CW03	YC1A	YPD	25C	10	A	Tag18	CTGGTTCAT
+CW04	YC2A	YPD	25C	30	A	Tag27	GGTACCGGT
+CW05	YC3A	YPD	25C	60	A	Tag06	AGTTAGAGT
+CW06	YC4A	YPD	25C	120	A	Tag25	GCGAGTTGT
+CW07	YH1A	YPD	37C	10	A	Tag29	GTCCATATT
+CW08	YH2A	YPD	37C	30	A	Tag17	CGTGGTAAT
+CW09	YH3A	YPD	37C	60	A	Tag16	CGCCAGACT
+CW10	YH4A	YPD	37C	120	A	Tag02	AAGTGCCGT
+CW11	RC1A	RPMI+	25C	10	A	Tag05	AGAGGACCT
+CW12	RC2A	RPMI+	25C	30	A	Tag04	ACAATCTCT
+CW13	RC3A	RPMI+	25C	60	A	Tag14	CGACTTGGT
+CW14	RC4A	RPMI+	25C	120	A	Tag08	ATGTTGTAT
+CW15	RH1A	RPMI+	37C	10	A	Tag20	CTTGGGCCT
+CW16	RH2A	RPMI+	37C	30	A	Tag32	GTTAGAAAT
+CW17	RH3A	RPMI+	37C	60	A	Tag31	GTGGCTGCT
+CW18	RH4A	RPMI+	37C	120	A	Tag15	CGATCCAGT
+CW19	YM9B	YPD	30C	180	B	Tag13	CCGCGGGAT
+CW20	YC0B	YPD	25C	0	B	Tag25	GCGAGTTGT
+CW21	YC1B	YPD	25C	10	B	Tag29	GTCCATATT
+CW22	YC2B	YPD	25C	30	B	Tag07	ATAATTCTT
+CW23	YC3B	YPD	25C	60	B	Tag19	CTGTAGGGT
+CW24	YC4B	YPD	25C	120	B	Tag04	ACAATCTCT
+CW25	YH1B	YPD	37C	10	B	Tag30	GTCTCCCAT
+CW26	YH2B	YPD	37C	30	B	Tag10	CAAGTGATT
+CW27	YH3B	YPD	37C	60	B	Tag01	AAGACGGGT
+CW28	YH4B	YPD	37C	120	B	Tag09	CAACACTTT
+CW29	RC1B	RPMI+	25C	10	B	Tag20	CTTGGGCCT
+CW30	RC2B	RPMI+	25C	30	B	Tag08	ATGTTGTAT
+CW31	RC3B	RPMI+	25C	60	B	Tag31	GTGGCTGCT
+CW32	RC4B	RPMI+	25C	120	B	Tag12	CATCTGTAT
+CW33	RH1B	RPMI+	37C	10	B	Tag23	GCCCTCCGT
+CW34	RH2B	RPMI+	37C	30	B	Tag27	GGTACCGGT
+CW35	RH3B	RPMI+	37C	60	B	Tag14	CGACTTGGT
+CW36	RH4B	RPMI+	37C	120	B	Tag11	CACGATGAT
