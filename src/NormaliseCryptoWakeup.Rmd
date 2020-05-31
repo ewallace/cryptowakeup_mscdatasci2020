@@ -66,23 +66,35 @@ kallcounts_bygene_fcfile <-
     here::here("data","CW-kallisto-abundance-foldchange-long-bygene.txt")
 
 write_lines(c("# CW-kallisto-abundance-foldchange-long-bygene.txt",
-              "# Crypto Wakeup kallisto abundance and foldchange in long tidy format summarised by gnee (summed over transcript isoforms)",
+              "# Crypto Wakeup kallisto abundance and foldchange in long tidy format summarised by gene (summed over transcript isoforms)",
               "# Edward Wallace, Edward.Wallace@ed.ac.uk, May 2020",
               "# Contents:",
               "#   Code: Short sample description, see CryptoWakeUpSampleSheetPlusTags.txt",
               "#   Gene: C. neoformans H99 systematic ORF name",
               "#   EstCounts: estimated gene counts from kallisto",              
               "#   TPM: estimated transcripts per million from kallisto",  
-              "#   FoldChange: TPM relative to median for one gene across all samples"),
+              "#   FoldChange: TPM relative to median for one gene across all samples",
+              "# "),
             path=kallcounts_bygene_fcfile)
 
 
 kallcounts_bygene_fc %>%
-    select(-TPM.median) %>%
-    mutate_if(is.numeric, round, digits=3) %>%
-    write_tsv(kallcounts_bygene_fcfile,append=TRUE)
+    dplyr::select(-TPM.median) %>%
+    dplyr::mutate_if(is.numeric, round, digits=3) %>%
+    readr::write_tsv(kallcounts_bygene_fcfile,append=TRUE,col_names=TRUE)
 ```
 
+## Make a wide-format data table for fold change
+
+The previous table `kallcounts_bygene_fc` is in tidy / long data format with one observation per row. Here we provide example code to create a wide data table in which each row contains fold change observations from every sample. To create a wide table with a different measure, change the `values_from` argument.
+
+```{r make_foldchange_wide}
+kallcounts_bygene_fc_wide <- 
+    kallcounts_bygene_fc %>%
+    tidyr::pivot_wider(id_cols="Gene", names_from = "Code", values_from = "FoldChange")
+
+kallcounts_bygene_fc_wide
+```
 
 
 
