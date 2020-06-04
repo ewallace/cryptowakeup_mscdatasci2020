@@ -373,7 +373,7 @@ summary {
 <div id="summary" class="section level2">
 <h2>Summary</h2>
 <p>This document is to produce k-mer count tables from fasta-format files.</p>
-<p>We apply it to count 5-mers in Cryptococus H99 approximate (500nt) promoters.</p>
+<p>We apply it to count 5-mers in Cryptococus H99 approximate (500nt) promoters, and approximate (250nt) terminators. These were both taken from <a href="http://fungidb.org/">fungidb</a> using the sequence retrieval tool in June 2020. Promoters were genomic sequence from 500nt upstream to 0nt upstream of the translation start codon, terminators were taken from 1nt downstream to 250nt downstream of the translation stop codon. In principle, we would get better results using the best-available annotations from the Janbon lab, published in <a href="https://doi.org/10.1093/nar/gkaa060">Quantitative global studies…, NAR 2020</a>.</p>
 </div>
 <div id="define-kmer-counting-functions" class="section level2">
 <h2>Define kmer-counting functions</h2>
@@ -495,6 +495,80 @@ readr::write_tsv(x = promoter_5mer_counts,
                  append=TRUE,col_names=TRUE)
 
 close(promoter_5mer_counts_file)</code></pre>
+</div>
+<div id="count-5-mers-for-cryptococcus-terminators" class="section level2">
+<h2>Count 5-mers for Cryptococcus terminators</h2>
+<pre class="r"><code>terminatorseqs_file &lt;- here::here(&quot;data&quot;,&quot;H99_allorfs_terminator250nt.fasta&quot;)
+terminatorseqs &lt;- Biostrings::readDNAStringSet(terminatorseqs_file)
+
+terminatorseqids &lt;- names(terminatorseqs) %&gt;%
+    stringr::str_extract(pattern=&quot;\\w+&quot;)
+
+all_5mers &lt;- make_kmer_list(k=5L)
+
+terminator_5mer_countsonly &lt;- terminatorseqs %&gt;%
+    as.character() %&gt;%
+    count_kmer_tibble(kmer_list = all_5mers, k=5L)
+
+terminator_5mer_counts &lt;- bind_cols(tibble(Gene=terminatorseqids),
+                                  terminator_5mer_countsonly)
+
+terminator_5mer_counts</code></pre>
+<pre><code>## # A tibble: 6,879 x 1,025
+##    Gene  AAAAA CAAAA GAAAA TAAAA ACAAA CCAAA GCAAA TCAAA AGAAA CGAAA GGAAA TGAAA
+##    &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+##  1 CNAG…     0     0     0     0     0     0     1     0     1     0     0     0
+##  2 CNAG…     2     0     0     1     1     0     0     0     1     0     0     0
+##  3 CNAG…     2     0     0     1     0     0     1     1     0     0     0     1
+##  4 CNAG…     0     2     0     1     0     2     0     2     1     0     3     0
+##  5 CNAG…     3     0     2     2     0     0     0     0     0     0     1     1
+##  6 CNAG…     0     0     0     0     0     0     0     0     0     0     0     0
+##  7 CNAG…     0     0     0     1     0     0     0     1     0     0     1     1
+##  8 CNAG…     0     0     0     0     0     0     0     1     0     0     2     0
+##  9 CNAG…     0     0     0     1     0     0     0     0     0     0     3     0
+## 10 CNAG…     1     0     1     0     0     0     0     1     1     0     0     1
+## # … with 6,869 more rows, and 1,012 more variables: ATAAA &lt;int&gt;, CTAAA &lt;int&gt;,
+## #   GTAAA &lt;int&gt;, TTAAA &lt;int&gt;, AACAA &lt;int&gt;, CACAA &lt;int&gt;, GACAA &lt;int&gt;,
+## #   TACAA &lt;int&gt;, ACCAA &lt;int&gt;, CCCAA &lt;int&gt;, GCCAA &lt;int&gt;, TCCAA &lt;int&gt;,
+## #   AGCAA &lt;int&gt;, CGCAA &lt;int&gt;, GGCAA &lt;int&gt;, TGCAA &lt;int&gt;, ATCAA &lt;int&gt;,
+## #   CTCAA &lt;int&gt;, GTCAA &lt;int&gt;, TTCAA &lt;int&gt;, AAGAA &lt;int&gt;, CAGAA &lt;int&gt;,
+## #   GAGAA &lt;int&gt;, TAGAA &lt;int&gt;, ACGAA &lt;int&gt;, CCGAA &lt;int&gt;, GCGAA &lt;int&gt;,
+## #   TCGAA &lt;int&gt;, AGGAA &lt;int&gt;, CGGAA &lt;int&gt;, GGGAA &lt;int&gt;, TGGAA &lt;int&gt;,
+## #   ATGAA &lt;int&gt;, CTGAA &lt;int&gt;, GTGAA &lt;int&gt;, TTGAA &lt;int&gt;, AATAA &lt;int&gt;,
+## #   CATAA &lt;int&gt;, GATAA &lt;int&gt;, TATAA &lt;int&gt;, ACTAA &lt;int&gt;, CCTAA &lt;int&gt;,
+## #   GCTAA &lt;int&gt;, TCTAA &lt;int&gt;, AGTAA &lt;int&gt;, CGTAA &lt;int&gt;, GGTAA &lt;int&gt;,
+## #   TGTAA &lt;int&gt;, ATTAA &lt;int&gt;, CTTAA &lt;int&gt;, GTTAA &lt;int&gt;, TTTAA &lt;int&gt;,
+## #   AAACA &lt;int&gt;, CAACA &lt;int&gt;, GAACA &lt;int&gt;, TAACA &lt;int&gt;, ACACA &lt;int&gt;,
+## #   CCACA &lt;int&gt;, GCACA &lt;int&gt;, TCACA &lt;int&gt;, AGACA &lt;int&gt;, CGACA &lt;int&gt;,
+## #   GGACA &lt;int&gt;, TGACA &lt;int&gt;, ATACA &lt;int&gt;, CTACA &lt;int&gt;, GTACA &lt;int&gt;,
+## #   TTACA &lt;int&gt;, AACCA &lt;int&gt;, CACCA &lt;int&gt;, GACCA &lt;int&gt;, TACCA &lt;int&gt;,
+## #   ACCCA &lt;int&gt;, CCCCA &lt;int&gt;, GCCCA &lt;int&gt;, TCCCA &lt;int&gt;, AGCCA &lt;int&gt;,
+## #   CGCCA &lt;int&gt;, GGCCA &lt;int&gt;, TGCCA &lt;int&gt;, ATCCA &lt;int&gt;, CTCCA &lt;int&gt;,
+## #   GTCCA &lt;int&gt;, TTCCA &lt;int&gt;, AAGCA &lt;int&gt;, CAGCA &lt;int&gt;, GAGCA &lt;int&gt;,
+## #   TAGCA &lt;int&gt;, ACGCA &lt;int&gt;, CCGCA &lt;int&gt;, GCGCA &lt;int&gt;, TCGCA &lt;int&gt;,
+## #   AGGCA &lt;int&gt;, CGGCA &lt;int&gt;, GGGCA &lt;int&gt;, TGGCA &lt;int&gt;, ATGCA &lt;int&gt;,
+## #   CTGCA &lt;int&gt;, GTGCA &lt;int&gt;, TTGCA &lt;int&gt;, …</code></pre>
+<pre class="r"><code>terminator_5mer_counts_file &lt;-
+    here::here(&quot;data&quot;,&quot;H99_allorfs_terminator250nt_5mercounts.txt.gz&quot;) %&gt;%
+    gzfile(&quot;w&quot; )
+
+write_lines(c(&quot;# H99_allorfs_terminator250nt_5mercounts.txt&quot;,
+              &quot;# 5-mer counts from Cryptococcus neoformans H99 approximate terminators&quot;,
+              &quot;# Edward Wallace, Edward.Wallace@ed.ac.uk, June 2020&quot;,
+              &quot;# Contents:&quot;,
+              &quot;#   Gene: C. neoformans H99 systematic ORF name&quot;,
+              &quot;#   AAAAA: counts of 5-mer AAAAA in the approximate terminator 250nt downstream of stop codon&quot;,
+              &quot;#   CAAAA: counts of 5-mer CAAAA, etc. &quot;,
+              &quot;#     one column for all 1024 5-mers from DNA alphabet, *rows* add up to &lt;= 246&quot;,
+              &quot;#     some sequences have missing nucleotides written as N, and those are not counted here&quot;,
+              &quot;# &quot;),
+            path=terminator_5mer_counts_file)
+
+readr::write_tsv(x = terminator_5mer_counts,
+                 path = terminator_5mer_counts_file,
+                 append=TRUE,col_names=TRUE)
+
+close(terminator_5mer_counts_file)</code></pre>
 </div>
 
 
