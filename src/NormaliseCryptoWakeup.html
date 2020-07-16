@@ -502,6 +502,75 @@ kallcounts_bygene_fc_wide</code></pre>
 ## #   YC4B &lt;dbl&gt;, YH1A &lt;dbl&gt;, YH1B &lt;dbl&gt;, YH2A &lt;dbl&gt;, YH2B &lt;dbl&gt;, YH3A &lt;dbl&gt;,
 ## #   YH3B &lt;dbl&gt;, YH4A &lt;dbl&gt;, YH4B &lt;dbl&gt;, YM9A &lt;dbl&gt;, YM9B &lt;dbl&gt;</code></pre>
 </div>
+<div id="add-explicit-condition-data-to-long-format-table" class="section level2">
+<h2>Add explicit condition data to long-format table</h2>
+<p>The table <code>kallcounts_bygene</code> is in tidy / long data format with one observation per row, and distinguishes samples by their abbreviated sample “Code”. Here we explicitly add metadata on each sample by loading the table using the join function.</p>
+<pre class="r"><code>sample_metadatafile &lt;- here::here(&quot;data&quot;,&quot;CryptoWakeUpSampleSheetPlusTags.txt&quot;)
+sample_metadata &lt;- readr::read_tsv(sample_metadatafile,
+                                   comment = &quot;#&quot;,
+                                   col_types = &quot;cccciccc&quot;)
+
+sample_metadata</code></pre>
+<pre><code>## # A tibble: 36 x 8
+##    SampleID Code  Medium Temp   Time Rep   TagID TagRead  
+##    &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt; &lt;int&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;    
+##  1 CW01     YM9A  YPD    30C     180 A     Tag09 CAACACTTT
+##  2 CW02     YC0A  YPD    25C       0 A     Tag12 CATCTGTAT
+##  3 CW03     YC1A  YPD    25C      10 A     Tag18 CTGGTTCAT
+##  4 CW04     YC2A  YPD    25C      30 A     Tag27 GGTACCGGT
+##  5 CW05     YC3A  YPD    25C      60 A     Tag06 AGTTAGAGT
+##  6 CW06     YC4A  YPD    25C     120 A     Tag25 GCGAGTTGT
+##  7 CW07     YH1A  YPD    37C      10 A     Tag29 GTCCATATT
+##  8 CW08     YH2A  YPD    37C      30 A     Tag17 CGTGGTAAT
+##  9 CW09     YH3A  YPD    37C      60 A     Tag16 CGCCAGACT
+## 10 CW10     YH4A  YPD    37C     120 A     Tag02 AAGTGCCGT
+## # … with 26 more rows</code></pre>
+<pre class="r"><code>kallcounts_bygene_withmetadata &lt;-
+    dplyr::select(sample_metadata,
+                  Code, Medium, Temp, Time, Rep) %&gt;%
+    dplyr::left_join(kallcounts_bygene)</code></pre>
+<pre><code>## Joining, by = &quot;Code&quot;</code></pre>
+<pre class="r"><code>kallcounts_bygene_withmetadata</code></pre>
+<pre><code>## # A tibble: 293,472 x 8
+##    Code  Medium Temp   Time Rep   Gene       EstCounts   TPM
+##    &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt; &lt;int&gt; &lt;chr&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;dbl&gt;
+##  1 YM9A  YPD    30C     180 A     CNAG_00001         0  0   
+##  2 YM9A  YPD    30C     180 A     CNAG_00002         4  9.73
+##  3 YM9A  YPD    30C     180 A     CNAG_00003         2  1.01
+##  4 YM9A  YPD    30C     180 A     CNAG_00004        35 13.3 
+##  5 YM9A  YPD    30C     180 A     CNAG_00005         5  2.32
+##  6 YM9A  YPD    30C     180 A     CNAG_00006        35 33.9 
+##  7 YM9A  YPD    30C     180 A     CNAG_00007        27 12.4 
+##  8 YM9A  YPD    30C     180 A     CNAG_00008        57 12.1 
+##  9 YM9A  YPD    30C     180 A     CNAG_00009        14 11.3 
+## 10 YM9A  YPD    30C     180 A     CNAG_00010        64 16.3 
+## # … with 293,462 more rows</code></pre>
+<div id="take-mean-tpm-across-replicates-for-each-condition" class="section level3">
+<h3>Take mean TPM across replicates for each condition</h3>
+<p>This could be useful for a summary plot of the data.</p>
+<pre class="r"><code>kallcounts_bygene_meanbycondition &lt;- 
+    kallcounts_bygene_withmetadata %&gt;%
+    dplyr::group_by(Gene,Medium, Temp, Time) %&gt;%
+    dplyr::summarise(TPM_mean = mean(TPM))
+
+kallcounts_bygene_meanbycondition</code></pre>
+<pre><code>## # A tibble: 146,736 x 5
+## # Groups:   Gene, Medium, Temp [40,760]
+##    Gene       Medium Temp   Time TPM_mean
+##    &lt;chr&gt;      &lt;chr&gt;  &lt;chr&gt; &lt;int&gt;    &lt;dbl&gt;
+##  1 CNAG_00001 RPMI+  25C      10    32.7 
+##  2 CNAG_00001 RPMI+  25C      30     6.42
+##  3 CNAG_00001 RPMI+  25C      60     8.29
+##  4 CNAG_00001 RPMI+  25C     120     9.64
+##  5 CNAG_00001 RPMI+  37C      10    13.0 
+##  6 CNAG_00001 RPMI+  37C      30    15.7 
+##  7 CNAG_00001 RPMI+  37C      60     5.43
+##  8 CNAG_00001 RPMI+  37C     120     9.51
+##  9 CNAG_00001 YPD    25C       0     0   
+## 10 CNAG_00001 YPD    25C      10     0   
+## # … with 146,726 more rows</code></pre>
+</div>
+</div>
 
 
 

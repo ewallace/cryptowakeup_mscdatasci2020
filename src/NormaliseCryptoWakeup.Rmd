@@ -97,4 +97,42 @@ kallcounts_bygene_fc_wide
 ```
 
 
+## Add explicit condition data to long-format table
+
+The  table `kallcounts_bygene` is in tidy / long data format with one observation per row, and distinguishes samples by their abbreviated sample "Code". Here we explicitly add metadata on each sample by loading the table using the join function.
+
+```{r make_explicit_metadata}
+sample_metadatafile <- here::here("data","CryptoWakeUpSampleSheetPlusTags.txt")
+sample_metadata <- readr::read_tsv(sample_metadatafile,
+                                   comment = "#",
+                                   col_types = "cccciccc")
+
+sample_metadata
+
+kallcounts_bygene_withmetadata <-
+    dplyr::select(sample_metadata,
+                  Code, Medium, Temp, Time, Rep) %>%
+    dplyr::left_join(kallcounts_bygene)
+kallcounts_bygene_withmetadata
+```
+
+### Take mean TPM across replicates for each condition
+
+This could be useful for a summary plot of the data.
+
+```{r mean_tpm_bycondition}
+kallcounts_bygene_meanbycondition <- 
+    kallcounts_bygene_withmetadata %>%
+    dplyr::group_by(Gene,Medium, Temp, Time) %>%
+    dplyr::summarise(TPM_mean = mean(TPM))
+
+kallcounts_bygene_meanbycondition
+```
+
+```{r write_kallcounts_bygene_meanbycondition,eval=FALSE,include=FALSE}
+write_tsv(kallcounts_bygene_meanbycondition %>% 
+              mutate(TPM_mean = round(TPM_mean, digits = 3)),
+          here::here("data","CW-kallisto1-tpmbycondition_bygene.txt") )
+```
+
 
