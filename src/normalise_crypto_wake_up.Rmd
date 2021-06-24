@@ -63,13 +63,13 @@ We write this to a file. We also round to 3 significant figures, because more th
 
 ```{r write_kallcounts_bygene_fc}
 kallcounts_bygene_fcfile <-
-    here::here("data","CW_kallisto_abundance_foldchang_long_by_gene.txt")
+    here::here("data","CW_kallisto_abundance_fold_change_long_by_gene.txt")
 
-write_lines(c("# CW_kallisto_abundance_foldchange_long_by_gene.txt",
+write_lines(c("# CW_kallisto_abundance_fold_change_long_by_gene.txt",
               "# Crypto Wakeup kallisto abundance and foldchange in long tidy format summarised by gene (summed over transcript isoforms)",
               "# Edward Wallace, Edward.Wallace@ed.ac.uk, May 2020",
               "# Contents:",
-              "#   Code: Short sample description, see CryptoWakeUpSampleSheetPlusTags.txt",
+              "#   Code: Short sample description, see crypto_wake_up_sample_sheet_plus_tags.txt",
               "#   Gene: C. neoformans H99 systematic ORF name",
               "#   EstCounts: estimated gene counts from kallisto",              
               "#   TPM: estimated transcripts per million from kallisto",  
@@ -102,7 +102,7 @@ kallcounts_bygene_fc_wide
 The  table `kallcounts_bygene` is in tidy / long data format with one observation per row, and distinguishes samples by their abbreviated sample "Code". Here we explicitly add metadata on each sample by loading the table using the join function.
 
 ```{r make_explicit_metadata}
-sample_metadatafile <- here::here("data","crypto_wake_up_sample_sheet_plus_tags.txt")
+sample_metadatafile <- here::here("data/misc","crypto_wake_up_sample_sheet_plus_tags.txt")
 sample_metadata <- readr::read_tsv(sample_metadatafile,
                                    comment = "#",
                                    col_types = "cccciccc")

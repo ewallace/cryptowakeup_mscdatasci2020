@@ -1,4 +1,4 @@
-# CryptoWakeUpSampleSheetPlusTags.txt
+# crypto_wake_up_sample_sheet_plus_tags.txt
 # Sample sheet and experimental design for the Cryptococcus wakeup experiment
 # Edward Wallace, Edward.Wallace@ed.ac.uk, 2017
 # Contents:
