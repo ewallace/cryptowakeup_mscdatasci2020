@@ -20,7 +20,7 @@ We apply it to count 5-mers in Cryptococus H99 approximate (500nt) promoters, an
 
 ## Define kmer-counting functions
 
-```{r kmer_functions}
+```{r kmer-functions}
 make_kmer_list <- function(k=2L, alphabet = c("A","C","G","T")) {
     list(alphabet) %>%
         base::rep(times = k) %>%
@@ -53,7 +53,7 @@ count_kmer_tibble <- function(stringset,kmer_list,k=2L) {
 
 ### Test k-mer counting functions
 
-```{r test_kmer_functions}
+```{r test-kmer-functions}
 all_2mers <- make_kmer_list(k=2L)
 
 count_kmer_one("AAAACTGA",all_2mers,k=2L)
@@ -65,7 +65,7 @@ count_kmer_tibble(c("AAAACTGA","ACACACAC"),all_2mers,k=2L)
 
 Warning: this chunk runs slowly (~10minutes on EW's Mac laptop), the code has not been optimised for speed.
 
-```{r count_5mers_H99promoters}
+```{r count-5mers-H99-promoters}
 promoterseqs_file <- here::here("data","H99_all_genes_promoter_500nt.fasta")
 promoterseqs <- Biostrings::readDNAStringSet(promoterseqs_file)
 
@@ -84,12 +84,12 @@ promoter_5mer_counts <- bind_cols(tibble(Gene=promoterseqids),
 promoter_5mer_counts
 ```
 
-```{r write_5mers_H99promoters}
+```{r write-5mers-H99-promoters}
 promoter_5mer_counts_file <-
-    here::here("data","H99_all_genes_promoter_500nt_5mer_counts.txt.gz") %>%
+    here::here("data","H99_all_genes_promoter_500nt_5mer_counts.tsv.gz") %>%
     gzfile("w" )
 
-write_lines(c("# H99_all_genes_promoter_500nt_5mer_counts.txt",
+write_lines(c("# H99_all_genes_promoter_500nt_5mer_counts.tsv",
               "# 5-mer counts from Cryptococcus neoformans H99 approximate promoters",
               "# Edward Wallace, Edward.Wallace@ed.ac.uk, June 2021",
               "# Contents:",
@@ -110,7 +110,7 @@ close(promoter_5mer_counts_file)
 
 ## Count 5-mers for Cryptococcus terminators
 
-```{r count_5mers_H99terminators}
+```{r count-5mers-H99-terminators}
 terminatorseqs_file <- here::here("data/misc","H99_all_genes_terminator_250nt.fasta")
 terminatorseqs <- Biostrings::readDNAStringSet(terminatorseqs_file)
 
@@ -129,14 +129,14 @@ terminator_5mer_counts <- bind_cols(tibble(Gene=terminatorseqids),
 terminator_5mer_counts
 ```
 
-```{r write_5mers_H99terminators}
+```{r write-5mers-H99-terminators}
 terminator_5mer_counts_file <-
-    here::here("data/misc","H99_all_genes_terminator_250nt_5mer_counts.txt.gz") %>%
+    here::here("data/misc","H99_all_genes_terminator_250nt_5mer_counts.tsv.gz") %>%
     gzfile("w" )
 
-write_lines(c("# H99_all_genes_terminator_250nt_5mer_counts.txt",
+write_lines(c("# H99_all_genes_terminator_250nt_5mer_counts.tsv",
               "# 5-mer counts from Cryptococcus neoformans H99 approximate terminators",
-              "# Edward Wallace, Edward.Wallace@ed.ac.uk, June 2020",
+              "# Edward Wallace, Edward.Wallace@ed.ac.uk, June 2021",
               "# Contents:",
               "#   Gene: C. neoformans H99 systematic ORF name",
               "#   AAAAA: counts of 5-mer AAAAA in the approximate terminator 250nt downstream of stop codon",

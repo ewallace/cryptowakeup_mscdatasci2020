@@ -21,8 +21,8 @@ These quantifications, in estimated counts and normalised to transcripts per mil
 
 Here we load this file.
 
-```{r load_kallcounts}
-kallcountfile <- here::here("data/misc","CW_kallisto1_abundance_long_by_sample_by_isoform.txt")
+```{r load-kallcounts}
+kallcountfile <- here::here("data/misc","CW_kallisto1_abundance_long_by_sample_by_isoform.tsv")
 
 kallcounts <- readr::read_tsv(kallcountfile, col_types="ccnn", comment= "#")
 
@@ -33,12 +33,12 @@ kallcounts
 
 To analyse each gene as a single entity, here we collapse different transcript isoforms into a single unit by adding up the estimated counts and tpms.
 
-```{r collect_bygene}
+```{r collect-by-gene}
 kallcounts_bygene <- 
   kallcounts %>%
-  dplyr::mutate(Gene = stringr::str_remove(target_id,"T[0-9]")) %>%
-  dplyr::group_by(Code,Gene) %>%
-  dplyr::summarise(EstCounts=sum(est_counts),TPM = sum(tpm))
+  dplyr::mutate(gene = stringr::str_remove(target_id,"T[0-9]")) %>%
+  dplyr::group_by(code,gene) %>%
+  dplyr::summarise(est_counts=sum(est_counts),TPM = sum(tpm))
 
 kallcounts_bygene
 ```
@@ -47,12 +47,12 @@ kallcounts_bygene
 
 To compare the *relative* levels of each gene in different samples, we calculate a median TPM for each gene in the samples, and then output a fold change for each sample as the TPM divided by median TPM.
 
-```{r fold_change}
+```{r fold-change}
 kallcounts_bygene_fc <- 
   kallcounts_bygene %>%
-  dplyr::group_by(Gene) %>%
+  dplyr::group_by(gene) %>%
   dplyr::mutate(TPM.median = median(TPM),
-                FoldChange = TPM/TPM.median)
+                fold_change = TPM/TPM.median)
 
 kallcounts_bygene_fc
 ```
@@ -61,19 +61,19 @@ kallcounts_bygene_fc
 
 We write this to a file. We also round to 3 significant figures, because more than that is excessive.
 
-```{r write_kallcounts_bygene_fc}
+```{r write-kallcounts-by-gene-fc}
 kallcounts_bygene_fcfile <-
-    here::here("data","CW_kallisto_abundance_fold_change_long_by_gene.txt")
+    here::here("data","CW_kallisto_abundance_fold_change_long_by_gene.tsv")
 
-write_lines(c("# CW_kallisto_abundance_fold_change_long_by_gene.txt",
+write_lines(c("# CW_kallisto_abundance_fold_change_long_by_gene.tsv",
               "# Crypto Wakeup kallisto abundance and foldchange in long tidy format summarised by gene (summed over transcript isoforms)",
               "# Edward Wallace, Edward.Wallace@ed.ac.uk, May 2020",
               "# Contents:",
-              "#   Code: Short sample description, see crypto_wake_up_sample_sheet_plus_tags.txt",
-              "#   Gene: C. neoformans H99 systematic ORF name",
-              "#   EstCounts: estimated gene counts from kallisto",              
+              "#   code: Short sample description, see crypto_wake_up_sample_sheet.txt",
+              "#   gene: C. neoformans H99 systematic ORF name",
+              "#   est_counts: estimated gene counts from kallisto",              
               "#   TPM: estimated transcripts per million from kallisto",  
-              "#   FoldChange: TPM relative to median for one gene across all samples",
+              "#   fold_change: TPM relative to median for one gene across all samples",
               "# "),
             path=kallcounts_bygene_fcfile)
 
@@ -88,10 +88,10 @@ kallcounts_bygene_fc %>%
 
 The previous table `kallcounts_bygene_fc` is in tidy / long data format with one observation per row. Here we provide example code to create a wide data table in which each row contains fold change observations from every sample. To create a wide table with a different measure, change the `values_from` argument.
 
-```{r make_foldchange_wide}
+```{r make-fold-change-wide}
 kallcounts_bygene_fc_wide <- 
     kallcounts_bygene_fc %>%
-    tidyr::pivot_wider(id_cols="Gene", names_from = "Code", values_from = "FoldChange")
+    tidyr::pivot_wider(id_cols="gene", names_from = "code", values_from = "fold_change")
 
 kallcounts_bygene_fc_wide
 ```
@@ -101,17 +101,17 @@ kallcounts_bygene_fc_wide
 
 The  table `kallcounts_bygene` is in tidy / long data format with one observation per row, and distinguishes samples by their abbreviated sample "Code". Here we explicitly add metadata on each sample by loading the table using the join function.
 
-```{r make_explicit_metadata}
-sample_metadatafile <- here::here("data/misc","crypto_wake_up_sample_sheet_plus_tags.txt")
+```{r make-explicit-metadata}
+sample_metadatafile <- here::here("data","crypto_wake_up_sample_sheet.tsv")
 sample_metadata <- readr::read_tsv(sample_metadatafile,
                                    comment = "#",
-                                   col_types = "cccciccc")
+                                   col_types = "ccccic")
 
 sample_metadata
 
 kallcounts_bygene_withmetadata <-
     dplyr::select(sample_metadata,
-                  Code, Medium, Temp, Time, Rep) %>%
+                  code, medium, temp, time, rep) %>%
     dplyr::left_join(kallcounts_bygene)
 kallcounts_bygene_withmetadata
 ```
@@ -120,16 +120,16 @@ kallcounts_bygene_withmetadata
 
 This could be useful for a summary plot of the data.
 
-```{r mean_tpm_bycondition}
+```{r mean-tpm-by-condition}
 kallcounts_bygene_meanbycondition <- 
     kallcounts_bygene_withmetadata %>%
-    dplyr::group_by(Gene,Medium, Temp, Time) %>%
+    dplyr::group_by(gene,medium, temp, time) %>%
     dplyr::summarise(TPM_mean = mean(TPM))
 
 kallcounts_bygene_meanbycondition
 ```
 
-```{r write_kallcounts_bygene_meanbycondition,eval=FALSE,include=FALSE}
+```{r write-kallcounts-by-gene-mean-by-condition, eval=FALSE, include=FALSE}
 write_tsv(kallcounts_bygene_meanbycondition %>% 
               mutate(TPM_mean = round(TPM_mean, digits = 3)),
           here::here("data","CW_kallisto1_tpm_by_condition_by_gene.txt") )

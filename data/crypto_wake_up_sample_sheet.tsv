@@ -1,0 +1,53 @@
+# crypto_wake_up_sample_sheet.tsv
+# Sample sheet and experimental design for the Cryptococcus wakeup experiment
+# Edward Wallace, Edward.Wallace@ed.ac.uk, 2021
+# Contents:
+#   sample_ID: Sample identifier
+#   code: short code summarising sample information.
+#         Y/R - growth medium (YPD/RPMI+)
+#         W/C/H - growth temperature category (Warm 30C, Cold 25C, Hot 37C)
+#         18/00/01/03/06/12 - timepoint category (18 = 180min, 00 = 0min, 01 = 10min, 03 = 30min, 06 = 60min, 12 = 120min)
+#         A/B - biological replicate 
+#   medium: growth medium of sample, YPD (rich medium), RPMI+ (RPMI cell culture medium + 10% fetal bovine serum)
+#   temp: growth temperature 30C, 25C, 37C
+#   time: growth time from waking up in minutes
+#   rep: biological replicate A or B
+# Note that sample_ID is *not* relevant to the downstream analysis
+# 
+sample_ID	code	medium	temp	time	rep
+CW01	YW18A	YPD	30C	180	A
+CW02	YC00A	YPD	25C	0	A
+CW03	YC01A	YPD	25C	10	A
+CW04	YC03A	YPD	25C	30	A
+CW05	YC06A	YPD	25C	60	A
+CW06	YC12A	YPD	25C	120	A
+CW07	YH01A	YPD	37C	10	A
+CW08	YH03A	YPD	37C	30	A
+CW09	YH06A	YPD	37C	60	A
+CW10	YH12A	YPD	37C	120	A
+CW11	RC01A	RPMI+	25C	10	A
+CW12	RC03A	RPMI+	25C	30	A
+CW13	RC06A	RPMI+	25C	60	A
+CW14	RC12A	RPMI+	25C	120	A
+CW15	RH01A	RPMI+	37C	10	A
+CW16	RH03A	RPMI+	37C	30	A
+CW17	RH06A	RPMI+	37C	60	A
+CW18	RH12A	RPMI+	37C	120	A
+CW19	YW18B	YPD	30C	180	B
+CW20	YC00B	YPD	25C	0	B
+CW21	YC01B	YPD	25C	10	B
+CW22	YC03B	YPD	25C	30	B
+CW23	YC06B	YPD	25C	60	B
+CW24	YC12B	YPD	25C	120	B
+CW25	YH01B	YPD	37C	10	B
+CW26	YH03B	YPD	37C	30	B
+CW27	YH06B	YPD	37C	60	B
+CW28	YH12B	YPD	37C	120	B
+CW29	RC01B	RPMI+	25C	10	B
+CW30	RC03B	RPMI+	25C	30	B
+CW31	RC06B	RPMI+	25C	60	B
+CW32	RC12B	RPMI+	25C	120	B
+CW33	RH01B	RPMI+	37C	10	B
+CW34	RH03B	RPMI+	37C	30	B
+CW35	RH06B	RPMI+	37C	60	B
+CW36	RH12B	RPMI+	37C	120	B
