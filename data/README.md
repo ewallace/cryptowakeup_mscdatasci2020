@@ -2,15 +2,20 @@
 
 ## crypto_wake_up_sample_sheet.tsv
 
-Text file in tsv format that contains the codification of the samples found in the project.
+Text file in tsv format that contains the codified metadata for the samples found in the project.
     
 ## CW_kallisto_abundance_fold_change_long_by_gene.tsv
 
-Text file in tsv format that contains the read counts of all genes in all conditions. Create by the normalise_crypto_wake_up.Rmd file using the CW_kallisto1_abundance_long_by_sample_by_isoform.tsv file. Uses the codification of temperature and time described in crypto_wake_up_sample_sheet.tsv
+Text file in tsv format that contains the read counts on transcripts of all *nuclear* coding genes in all conditions. 
+Created by the` normalise_crypto_wake_up.Rmd` file using the `CW_kallisto1_abundance_long_by_sample_by_isoform.tsv` file. 
+Uses the codification of temperature and time described in `crypto_wake_up_sample_sheet.tsv`.
+
+*Warning:* genes that begin `CNAG_09` are encoded in the mitochondrial genome, and were not included in this analysis although they are present in the other files.
     
 ## H99_all_genes_promoter_500nt.fasta
     
-Raw promoter sequences for all gene in Cryptococcus genome. Downloaded from fungiDB with the assumption that the promoyer for each is gene is simply the first 500nt upstream of start codon.
+Raw promoter sequences for all gene in Cryptococcus genome. 
+Downloaded from FungiDB (release 52, June 2021) with the approximation that the promoter for each is gene is the first 500nt upstream of start codon.
 
 ## H99_all_genes_promoter_500nt_5mer_counts.tsv.gz
 
@@ -34,4 +39,5 @@ Compressed tsv file of kmer counts. Contains counts for every possible 1-mer in 
 
 ## H99_all_gene_ids.tsv
     
-Text file in tsv format that contains a list of all gene IDs in the Cryptococcus H99 genome
+Text file in tsv format that contains a list of all annotated gene IDs in the Cryptococcus H99 genome.
+Downloaded from FungiDB release 52, June 2021.
