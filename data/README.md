@@ -16,6 +16,22 @@ H99_all_genes_promoter_500nt_5mer_counts.tsv.gz
 
     Compressed tsv file of kmer counts. Contains counts for every possible 5-mer in every Cryptococcus gene promoter, as defined in H99_all_genes_promoter_500nt.fasta. Created by the count_kmers.Rmd file.
     
+H99_all_genes_promoter_500nt_4mer_counts.tsv.gz
+
+    Compressed tsv file of kmer counts. Contains counts for every possible 4-mer in every Cryptococcus gene promoter, as defined in H99_all_genes_promoter_500nt.fasta. Created by the count_kmers.Rmd file.
+    
+H99_all_genes_promoter_500nt_3mer_counts.tsv.gz
+
+    Compressed tsv file of kmer counts. Contains counts for every possible 3-mer in every Cryptococcus gene promoter, as defined in H99_all_genes_promoter_500nt.fasta. Created by the count_kmers.Rmd file.
+    
+H99_all_genes_promoter_500nt_2mer_counts.tsv.gz
+
+    Compressed tsv file of kmer counts. Contains counts for every possible 2-mer in every Cryptococcus gene promoter, as defined in H99_all_genes_promoter_500nt.fasta. Created by the count_kmers.Rmd file.
+    
+H99_all_genes_promoter_500nt_1mer_counts.tsv.gz
+
+    Compressed tsv file of kmer counts. Contains counts for every possible 1-mer in every Cryptococcus gene promoter, as defined in H99_all_genes_promoter_500nt.fasta. Created by the count_kmers.Rmd file.
+    
 H99_all_gene_ids.tsv
     
     Text file in tsv format that contains a list of all gene IDs in the Cryptococcus H99 genome
