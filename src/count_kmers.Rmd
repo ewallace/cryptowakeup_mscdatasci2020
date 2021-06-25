@@ -1,0 +1,155 @@
+---
+title: "Counting K-mers from sequences"
+author: "Edward Wallace"
+date: "03/06/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache=TRUE,
+                      cache.path = "cache/count_kmers-")
+library(tidyverse)
+library(Biostrings)
+```
+
+## Summary
+
+This document is to produce k-mer count tables from fasta-format files.
+
+We apply it to count 5-mers in Cryptococus H99 approximate (500nt) promoters, and approximate (250nt) terminators. These were both taken from [fungidb](http://fungidb.org/) using the sequence retrieval tool in June 2021. Promoters were genomic sequence from 500nt upstream to 1nt upstream of the translation start codon, terminators were taken from 1nt downstream to 250nt downstream of the translation stop codon. In principle, we would get better results using the best-available annotations from the Janbon lab, published in [Quantitative global studies..., NAR 2020](https://doi.org/10.1093/nar/gkaa060).
+
+## Define kmer-counting functions
+
+```{r kmer-functions}
+make_kmer_list <- function(k=2L, alphabet = c("A","C","G","T")) {
+    list(alphabet) %>%
+        base::rep(times = k) %>%
+        purrr::set_names(LETTERS[1:k]) %>%
+        base::expand.grid() %>%
+        tidyr::unite("kmer",LETTERS[1:k],sep="") %>%
+        dplyr::pull(kmer)
+}
+
+count_kmer_one <- function(string,kmer_list,k=2L) {
+    stopifnot( nchar(kmer_list[1]) == k )
+    
+    kCount <- rep(0L,length(kmer_list)) %>% purrr::set_names(kmer_list)
+    kminus1 <- k - 1L
+    for(i in 1:( nchar(string) - kminus1 ) ) {
+        kmer <- stringr::str_sub(string, start=i, end = i + kminus1)
+        if(kmer %in% kmer_list) {
+            kCount[kmer] <- kCount[kmer] + 1L
+        }
+    }
+    return(kCount)
+}
+
+count_kmer_tibble <- function(stringset,kmer_list,k=2L) {
+    lapply(stringset,count_kmer_one,kmer_list=kmer_list,k=k) %>%
+        lapply(as.list) %>%
+        dplyr::bind_rows()
+}
+```
+
+### Test k-mer counting functions
+
+```{r test-kmer-functions}
+all_2mers <- make_kmer_list(k=2L)
+
+count_kmer_one("AAAACTGA",all_2mers,k=2L)
+
+count_kmer_tibble(c("AAAACTGA","ACACACAC"),all_2mers,k=2L)
+```
+
+## Count 5-mers for Cryptococcus promoters
+
+Warning: this chunk runs slowly (~10minutes on EW's Mac laptop), the code has not been optimised for speed.
+
+```{r count-5mers-H99-promoters}
+promoterseqs_file <- here::here("data","H99_all_genes_promoter_500nt.fasta")
+promoterseqs <- Biostrings::readDNAStringSet(promoterseqs_file)
+
+promoterseqids <- names(promoterseqs) %>%
+    stringr::str_extract(pattern="\\w+")
+
+all_5mers <- make_kmer_list(k=5L)
+
+promoter_5mer_countsonly <- promoterseqs %>%
+    as.character() %>%
+    count_kmer_tibble(kmer_list = all_5mers, k=5L)
+
+promoter_5mer_counts <- bind_cols(tibble(Gene=promoterseqids),
+                                  promoter_5mer_countsonly)
+
+promoter_5mer_counts
+```
+
+```{r write-5mers-H99-promoters}
+promoter_5mer_counts_file <-
+    here::here("data","H99_all_genes_promoter_500nt_5mer_counts.tsv.gz") %>%
+    gzfile("w" )
+
+write_lines(c("# H99_all_genes_promoter_500nt_5mer_counts.tsv",
+              "# 5-mer counts from Cryptococcus neoformans H99 approximate promoters",
+              "# Edward Wallace, Edward.Wallace@ed.ac.uk, June 2021",
+              "# Contents:",
+              "#   Gene: C. neoformans H99 systematic ORF name",
+              "#   AAAAA: counts of 5-mer AAAAA in the approximate promoter 500nt upstream of ATG start codon",
+              "#   CAAAA: counts of 5-mer CAAAA, etc. ",
+              "#     one column for all 1024 5-mers from DNA alphabet, *rows* add up to <= 497",
+              "#     some sequences have missing nucleotides written as N, and those are not counted here",
+              "# "),
+            path=promoter_5mer_counts_file)
+
+readr::write_tsv(x = promoter_5mer_counts,
+                 path = promoter_5mer_counts_file,
+                 append=TRUE,col_names=TRUE)
+
+close(promoter_5mer_counts_file)
+```
+
+## Count 5-mers for Cryptococcus terminators
+
+```{r count-5mers-H99-terminators}
+terminatorseqs_file <- here::here("data/misc","H99_all_genes_terminator_250nt.fasta")
+terminatorseqs <- Biostrings::readDNAStringSet(terminatorseqs_file)
+
+terminatorseqids <- names(terminatorseqs) %>%
+    stringr::str_extract(pattern="\\w+")
+
+all_5mers <- make_kmer_list(k=5L)
+
+terminator_5mer_countsonly <- terminatorseqs %>%
+    as.character() %>%
+    count_kmer_tibble(kmer_list = all_5mers, k=5L)
+
+terminator_5mer_counts <- bind_cols(tibble(Gene=terminatorseqids),
+                                  terminator_5mer_countsonly)
+
+terminator_5mer_counts
+```
+
+```{r write-5mers-H99-terminators}
+terminator_5mer_counts_file <-
+    here::here("data/misc","H99_all_genes_terminator_250nt_5mer_counts.tsv.gz") %>%
+    gzfile("w" )
+
+write_lines(c("# H99_all_genes_terminator_250nt_5mer_counts.tsv",
+              "# 5-mer counts from Cryptococcus neoformans H99 approximate terminators",
+              "# Edward Wallace, Edward.Wallace@ed.ac.uk, June 2021",
+              "# Contents:",
+              "#   Gene: C. neoformans H99 systematic ORF name",
+              "#   AAAAA: counts of 5-mer AAAAA in the approximate terminator 250nt downstream of stop codon",
+              "#   CAAAA: counts of 5-mer CAAAA, etc. ",
+              "#     one column for all 1024 5-mers from DNA alphabet, *rows* add up to <= 246",
+              "#     some sequences have missing nucleotides written as N, and those are not counted here",
+              "# "),
+            path=terminator_5mer_counts_file)
+
+readr::write_tsv(x = terminator_5mer_counts,
+                 path = terminator_5mer_counts_file,
+                 append=TRUE,col_names=TRUE)
+
+close(terminator_5mer_counts_file)
+```
+
